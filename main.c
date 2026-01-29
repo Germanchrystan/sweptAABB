@@ -81,9 +81,8 @@ int main()
 
     if (DynamicRectVsRect(movingRect, block, &contactPoint, &contactNormal, &fTime, dt))
     {
-      movingRect.velocity = Vector2Scale(
-          Vector2Multiply(contactNormal, (Vector2){fabsf(movingRect.velocity.x), fabsf(movingRect.velocity.y)}),
-          1 - fTime);
+      float normalVelocity = Vector2DotProduct(movingRect.velocity, contactNormal);
+      movingRect.velocity = Vector2Subtract(movingRect.velocity, Vector2Scale(contactNormal, normalVelocity));
     }
 
     ResolveRectVelocity(&movingRect);
