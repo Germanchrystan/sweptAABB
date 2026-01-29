@@ -4,15 +4,17 @@
 
 bool RayVsRect(Vector2 rayOrigin, Vector2 rayDir, Rectangle target, Vector2* contactPoint,Vector2* contactNormal, float *tHitNear)
 {
+  if (rayDir.x == 0 && rayDir.y == 0) return false;
+
   Vector2 tNear = (Vector2)
   {
-    (target.x - rayOrigin.x) / rayDir.x,
-    (target.y - rayOrigin.y) / rayDir.y,
+    (rayDir.x != 0) ? (target.x - rayOrigin.x) / rayDir.x : -1e30f,
+    (rayDir.y != 0) ? (target.y - rayOrigin.y) / rayDir.y : -1e30f,
   };
   Vector2 tFar = (Vector2)
   {
-    (target.x + target.width - rayOrigin.x) / rayDir.x,
-    (target.y + target.height - rayOrigin.y) / rayDir.y,
+    (rayDir.x != 0) ? (target.x + target.width - rayOrigin.x) / rayDir.x : 1e30f,
+    (rayDir.y != 0) ? (target.y + target.height - rayOrigin.y) / rayDir.y : 1e30f,
   };
 
   // Swapping
