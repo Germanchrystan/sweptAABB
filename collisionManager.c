@@ -1,10 +1,9 @@
 #include <raylib.h>
 #include <math.h>
+#include "collisionManager.h"
 
-bool RayVsRect(Vector2 rayOrigin, Vector2 rayEnd, Rectangle target, Vector2* contactPoint,Vector2* contactNormal, float *tHitNear)
+bool RayVsRect(Vector2 rayOrigin, Vector2 rayDir, Rectangle target, Vector2* contactPoint,Vector2* contactNormal, float *tHitNear)
 {
-  Vector2 rayDir = (Vector2){ rayEnd.x - rayOrigin.x, rayEnd.y - rayOrigin.y };
-
   Vector2 tNear = (Vector2)
   {
     (target.x - rayOrigin.x) / rayDir.x,
@@ -68,3 +67,34 @@ bool RayVsRect(Vector2 rayOrigin, Vector2 rayEnd, Rectangle target, Vector2* con
 
   return true;
 };
+
+
+bool DynamicRectVsRect(MovingRect sourceRect, Rectangle targetRect, Vector2* contactPoint, Vector2* contactNormal, float* fTime, float dt)
+{
+  if (sourceRect.velocity.x == 0 && sourceRect.velocity.y == 0) return false;
+
+  Rectangle expandedRect;
+  expandedRect.x = targetRect.x - sourceRect.width / 2;
+  expandedRect.y = targetRect.y - sourceRect.height / 2;
+  expandedRect.width = targetRect.width + sourceRect.width;
+  expandedRect.height = targetRect.height + sourceRect.height;
+
+  Vector2 velocityDelta = (Vector2)
+  {
+    sourceRect.velocity.x * dt,
+    sourceRect.velocity.y * dt
+  };
+
+  if(RayVsRect((Vector2){sourceRect.pos.x + sourceRect.width/2, sourceRect.pos.y + sourceRect.height/2}, velocityDelta, expandedRect, contactPoint, contactNormal, fTime))
+  {
+    if((*fTime) <= 1.0f) return true;
+  }
+
+  return false;
+}
+
+void ResolveRectVelocity(MovingRect *rect)
+{
+  rect -> pos.x += rect -> velocity.x;
+  rect -> pos.y += rect -> velocity.y;
+}
