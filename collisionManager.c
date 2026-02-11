@@ -1,4 +1,5 @@
 #include <raylib.h>
+#include <raymath.h>
 #include <math.h>
 #include "collisionManager.h"
 
@@ -71,7 +72,7 @@ bool RayVsRect(Vector2 rayOrigin, Vector2 rayDir, Rectangle target, Vector2* con
 };
 
 
-bool DynamicRectVsRect(MovingRect sourceRect, Rectangle targetRect, Vector2* contactPoint, Vector2* contactNormal, float* fTime, float dt)
+bool DynamicRectVsRect(MovingRect sourceRect, Rectangle targetRect, Vector2* contactPoint, Vector2* contactNormal, float* contactTime, float dt)
 {
   if (sourceRect.velocity.x == 0 && sourceRect.velocity.y == 0) return false;
 
@@ -87,9 +88,15 @@ bool DynamicRectVsRect(MovingRect sourceRect, Rectangle targetRect, Vector2* con
     sourceRect.velocity.y * dt
   };
 
-  if(RayVsRect((Vector2){sourceRect.pos.x + sourceRect.width/2, sourceRect.pos.y + sourceRect.height/2}, velocityDelta, expandedRect, contactPoint, contactNormal, fTime))
+  if(RayVsRect(
+    (Vector2){sourceRect.pos.x + sourceRect.width/2, sourceRect.pos.y + sourceRect.height/2},
+    velocityDelta,
+    expandedRect,
+    contactPoint,
+    contactNormal,
+    contactTime))
   {
-    if((*fTime) <= 1.0f) return true;
+    return (*contactTime) <= 1.0f && (*contactTime) >= 0.0f;
   }
 
   return false;
@@ -97,6 +104,5 @@ bool DynamicRectVsRect(MovingRect sourceRect, Rectangle targetRect, Vector2* con
 
 void ResolveRectVelocity(MovingRect *rect)
 {
-  rect -> pos.x += rect -> velocity.x;
-  rect -> pos.y += rect -> velocity.y;
+  rect-> pos = Vector2Add(rect -> pos, rect -> velocity);
 }

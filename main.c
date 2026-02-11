@@ -41,6 +41,7 @@
 
 #include <raylib.h>
 #include <raymath.h>
+#include <stdio.h>
 #include "collisionManager.h"
 
 #define SPEED 105.0f
@@ -81,8 +82,8 @@ int main()
 
     if (DynamicRectVsRect(movingRect, block, &contactPoint, &contactNormal, &fTime, dt))
     {
-      float normalVelocity = Vector2DotProduct(movingRect.velocity, contactNormal);
-      movingRect.velocity = Vector2Subtract(movingRect.velocity, Vector2Scale(contactNormal, normalVelocity));
+      movingRect.velocity.x += contactNormal.x * fabs(movingRect.velocity.x) * (1.0f - fTime);
+      movingRect.velocity.y += contactNormal.y * fabs(movingRect.velocity.y) * (1.0f - fTime);
     }
 
     ResolveRectVelocity(&movingRect);
@@ -91,6 +92,8 @@ int main()
     BeginDrawing();
     ClearBackground(BLACK);
     DrawRectangleRec(block, BLUE);
+    char* text = TextFormat("%.2f %.2f", movingRect.velocity.x, movingRect.velocity.y);
+    DrawText(text, 500, 10, 20, RAYWHITE);
     DrawRectangleV(movingRect.pos, (Vector2){movingRect.width, movingRect.height}, GREEN);
     EndDrawing();
   }
