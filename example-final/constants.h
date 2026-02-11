@@ -1,0 +1,6 @@
+#pragma once
+
+#define WINDOW_SCALE 3
+#define WINDOW_WIDTH (256 * WINDOW_SCALE)
+#define WINDOW_HEIGHT (240 * WINDOW_SCALE)
+#define BLOCK_SIZE (16 * WINDOW_SCALE)
